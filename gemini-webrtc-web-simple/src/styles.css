@@ -1,0 +1,116 @@
+body {
+  max-width: 800px;
+  margin: 20px 20px;
+  ;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+#join-div a {
+  color: #2563eb;
+  cursor: pointer;
+}
+
+.user-message {
+  background-color: #f0f0f0;
+  margin: 24px 12px;
+  padding: 16px;
+  border-radius: 8px;
+  line-height: 1.5;
+}
+
+.user-message .interim {
+  color: #707070;
+}
+
+.user-message::before {
+  content: "User\A";
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+  display: block;
+  padding-bottom: 0.4em;
+}
+
+.assistant-message {
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  margin: 24px 12px;
+  padding: 16px;
+  border-radius: 8px;
+  line-height: 1.5;
+}
+
+.assistant-message::before {
+  content: "Assistant";
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+  display: block;
+  padding-bottom: 0.4em;
+}
+
+/* Explanation section styling */
+.explanation-boxes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.method-box {
+  padding: 1rem;
+  border-radius: 8px;
+  border: 2px solid #ddd;
+}
+
+.localhost-method {
+  background-color: #f0f8ff;
+  border-color: #007bff;
+}
+
+.direct-method {
+  background-color: #f0fff0;
+  border-color: #28a745;
+}
+
+.method-box h3 {
+  margin-top: 0;
+  color: #333;
+}
+
+.method-box ul {
+  margin: 0.5rem 0;
+  padding-left: 1.5rem;
+}
+
+.method-box li {
+  margin: 0.25rem 0;
+}
+
+.troubleshooting {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background-color: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 8px;
+}
+
+.troubleshooting h3 {
+  margin-top: 0;
+  color: #856404;
+}
+
+.troubleshooting ol {
+  margin: 0.5rem 0;
+  padding-left: 1.5rem;
+}
+
+.troubleshooting li {
+  margin: 0.5rem 0;
+}
+
+@media (max-width: 768px) {
+  .explanation-boxes {
+    grid-template-columns: 1fr;
+  }
+}

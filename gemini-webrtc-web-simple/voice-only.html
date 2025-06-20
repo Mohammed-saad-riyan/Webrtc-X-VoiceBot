@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Voice Assistant</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            text-align: center;
+            max-width: 500px;
+            padding: 40px;
+        }
+        
+        h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+            font-weight: 300;
+        }
+        
+        .status {
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            padding: 15px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .voice-button {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        
+        .voice-button:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.05);
+        }
+        
+        .voice-button.active {
+            background: #4CAF50;
+            animation: pulse 1.5s infinite;
+        }
+        
+        .voice-button.speaking {
+            background: #FF5722;
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .instructions {
+            margin-top: 30px;
+            font-size: 0.9em;
+            opacity: 0.8;
+            line-height: 1.6;
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎤 Voice Assistant</h1>
+        
+        <div id="status" class="status">
+            Click "Start" to begin talking with your AI assistant
+        </div>
+        
+        <button id="startBtn" class="voice-button">
+            <div class="icon">🎙️</div>
+            <div>Start</div>
+        </button>
+        
+        <div class="instructions">
+            <p><strong>How to use:</strong></p>
+            <p>1. Click "Start" to join the voice session</p>
+            <p>2. Allow microphone access when prompted</p>
+            <p>3. Start speaking naturally to your AI assistant</p>
+            <p>4. The assistant will respond with voice</p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { RTVIClient } from "https://cdn.jsdelivr.net/npm/@pipecat-ai/client-js@0.0.7/dist/index.js";
+        import { DailyTransport } from "https://cdn.jsdelivr.net/npm/@pipecat-ai/daily-transport@0.0.7/dist/index.js";
+
+        const startBtn = document.getElementById('startBtn');
+        const status = document.getElementById('status');
+        
+        let rtviClient = null;
+        let isConnected = false;
+
+        function updateStatus(message, type = 'info') {
+            status.textContent = message;
+            status.className = `status ${type}`;
+        }
+
+        function updateButton(text, icon, className = '') {
+            const iconEl = startBtn.querySelector('.icon');
+            const textEl = startBtn.querySelector('div:last-child');
+            iconEl.textContent = icon;
+            textEl.textContent = text;
+            startBtn.className = `voice-button ${className}`;
+        }
+
+        async function startVoiceSession() {
+            try {
+                updateStatus('Connecting to voice assistant...', 'connecting');
+                updateButton('Connecting...', '⏳');
+
+                const transport = new DailyTransport();
+                
+                rtviClient = new RTVIClient({
+                    transport,
+                    params: {
+                        baseUrl: "http://localhost:7860/",
+                    },
+                    enableMic: true,
+                    enableCam: false,  // Voice only!
+                    timeout: 30 * 1000,
+                });
+
+                // Handle connection events
+                rtviClient.on("connected", () => {
+                    console.log("Connected to voice assistant");
+                    isConnected = true;
+                    updateStatus('🎤 Listening... Start speaking!', 'connected');
+                    updateButton('Listening', '👂', 'active');
+                });
+
+                rtviClient.on("disconnected", () => {
+                    console.log("Disconnected from voice assistant");
+                    isConnected = false;
+                    updateStatus('Disconnected. Click "Start" to reconnect.', 'disconnected');
+                    updateButton('Start', '🎙️');
+                });
+
+                // Handle voice activity
+                rtviClient.on("userStartedSpeaking", () => {
+                    console.log("User started speaking");
+                    updateStatus('🗣️ You are speaking...', 'user-speaking');
+                    updateButton('Speaking', '🗣️', 'active');
+                });
+
+                rtviClient.on("userStoppedSpeaking", () => {
+                    console.log("User stopped speaking");
+                    updateStatus('🤔 AI is thinking...', 'processing');
+                    updateButton('Processing', '🤔', 'processing');
+                });
+
+                rtviClient.on("botStartedSpeaking", () => {
+                    console.log("Bot started speaking");
+                    updateStatus('🤖 AI is responding...', 'bot-speaking');
+                    updateButton('AI Speaking', '🤖', 'speaking');
+                });
+
+                rtviClient.on("botStoppedSpeaking", () => {
+                    console.log("Bot stopped speaking");
+                    updateStatus('🎤 Listening... Your turn!', 'listening');
+                    updateButton('Listening', '👂', 'active');
+                });
+
+                // Handle errors
+                rtviClient.on("error", (error) => {
+                    console.error("Voice assistant error:", error);
+                    updateStatus(`Error: ${error.message}`, 'error');
+                    updateButton('Error - Retry', '❌');
+                    isConnected = false;
+                });
+
+                // Connect to the voice assistant
+                await rtviClient.connect();
+
+            } catch (error) {
+                console.error("Failed to start voice session:", error);
+                updateStatus(`Failed to connect: ${error.message}`, 'error');
+                updateButton('Retry', '🔄');
+                isConnected = false;
+            }
+        }
+
+        async function stopVoiceSession() {
+            if (rtviClient) {
+                await rtviClient.disconnect();
+                rtviClient = null;
+            }
+            isConnected = false;
+            updateStatus('Click "Start" to begin talking with your AI assistant', 'disconnected');
+            updateButton('Start', '🎙️');
+        }
+
+        startBtn.addEventListener('click', async () => {
+            if (isConnected) {
+                await stopVoiceSession();
+            } else {
+                await startVoiceSession();
+            }
+        });
+    </script>
+</body>
+</html> 

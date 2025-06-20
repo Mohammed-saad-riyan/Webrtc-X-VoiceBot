@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🗣️ Direct Voice Assistant with Bot Control</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+        .button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .btn-primary { background-color: #007bff; color: white; }
+        .btn-success { background-color: #28a745; color: white; }
+        .btn-danger { background-color: #dc3545; color: white; }
+        .btn-warning { background-color: #ffc107; color: black; }
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        .status.connected { background-color: #d4edda; color: #155724; }
+        .status.error { background-color: #f8d7da; color: #721c24; }
+        .status.warning { background-color: #fff3cd; color: #856404; }
+        .room-info {
+            background-color: #e7f3ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #007bff;
+        }
+        #roomUrlInput {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+        .instructions {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🗣️ Direct Voice Assistant with Bot Control</h1>
+    
+    <div class="card">
+        <h2>🎯 Enhanced Direct Room Access</h2>
+        <p>This combines the simplicity of direct Daily room access with the control of manual bot activation!</p>
+        
+        <div class="room-info">
+            <h3>📍 Current Room</h3>
+            <input type="text" id="roomUrlInput" placeholder="Enter Daily room URL (e.g., https://lipra.daily.co/roomname)" />
+            <button class="button btn-primary" onclick="joinRoom()">🚀 Join Room</button>
+            <button class="button btn-success" onclick="getNewRoom()">🆕 Create New Room</button>
+        </div>
+        
+        <div id="statusArea">
+            <div id="roomStatus" class="status warning">Not connected to any room</div>
+            <div id="botStatus" class="status warning">Bot not active</div>
+        </div>
+        
+        <div class="instructions">
+            <h3>🎮 Bot Controls</h3>
+            <button class="button btn-success" id="activateBtn" onclick="activateBot()" disabled>🤖 Activate Bot</button>
+            <button class="button btn-danger" id="deactivateBtn" onclick="deactivateBot()" disabled>🛑 Deactivate Bot</button>
+            <button class="button btn-warning" onclick="refreshStatus()">🔄 Refresh Status</button>
+        </div>
+    </div>
+    
+    <div class="card">
+        <h2>📋 How to Use</h2>
+        <ol>
+            <li><strong>Get a Room:</strong> Either enter an existing Daily room URL or click "Create New Room"</li>
+            <li><strong>Join Room:</strong> Click "Join Room" to enter the voice chat</li>
+            <li><strong>Control Bot:</strong> Use "Activate Bot" and "Deactivate Bot" buttons to control the AI assistant</li>
+            <li><strong>Talk:</strong> Start speaking naturally when the bot is active</li>
+        </ol>
+        
+        <div class="status warning">
+            <strong>💡 Pro Tip:</strong> You can use this with any Daily room URL, including ones created by the regular python server.py approach!
+        </div>
+    </div>
+
+    <script>
+        let currentRoomUrl = '';
+        let botActive = false;
+        let botPid = null;
+
+        // Check if there's a room URL in the current page URL
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const roomUrl = urlParams.get('room');
+            if (roomUrl) {
+                document.getElementById('roomUrlInput').value = roomUrl;
+                currentRoomUrl = roomUrl;
+                updateRoomStatus(`Ready to join: ${roomUrl}`, 'connected');
+            }
+        };
+
+        async function getNewRoom() {
+            try {
+                updateRoomStatus('Creating new room...', 'warning');
+                
+                // Call the server to create a new room (without auto-bot)
+                const response = await fetch('http://localhost:7860/connect', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                const data = await response.json();
+                if (data.room_url) {
+                    currentRoomUrl = data.room_url;
+                    document.getElementById('roomUrlInput').value = currentRoomUrl;
+                    updateRoomStatus(`New room created: ${currentRoomUrl}`, 'connected');
+                    console.log('Created room:', currentRoomUrl);
+                } else {
+                    throw new Error('No room URL in response');
+                }
+            } catch (error) {
+                console.error('Failed to create room:', error);
+                updateRoomStatus('Failed to create room', 'error');
+            }
+        }
+
+        function joinRoom() {
+            const roomUrl = document.getElementById('roomUrlInput').value.trim();
+            if (!roomUrl) {
+                alert('Please enter a Daily room URL');
+                return;
+            }
+            
+            currentRoomUrl = roomUrl;
+            updateRoomStatus(`Joining room...`, 'warning');
+            
+            // Open the Daily room in a new window/tab
+            window.open(roomUrl, '_blank');
+            
+            // Update status and enable bot controls
+            setTimeout(() => {
+                updateRoomStatus(`Connected to: ${roomUrl}`, 'connected');
+                document.getElementById('activateBtn').disabled = false;
+                document.getElementById('deactivateBtn').disabled = false;
+            }, 2000);
+        }
+
+        async function activateBot() {
+            if (!currentRoomUrl) {
+                alert('Please join a room first');
+                return;
+            }
+
+            try {
+                updateBotStatus('Activating bot...', 'warning');
+                
+                const response = await fetch(`http://localhost:7860/bot/activate?room_url=${encodeURIComponent(currentRoomUrl)}`);
+                const result = await response.json();
+                
+                console.log('Bot activation response:', result);
+                
+                if (result.status === 'bot_activated') {
+                    botActive = true;
+                    botPid = result.bot_pid;
+                    updateBotStatus(`Bot Active (PID: ${result.bot_pid})`, 'connected');
+                } else {
+                    updateBotStatus(`Error: ${result.message}`, 'error');
+                }
+            } catch (error) {
+                console.error('Failed to activate bot:', error);
+                updateBotStatus('Failed to activate bot', 'error');
+            }
+        }
+
+        async function deactivateBot() {
+            if (!currentRoomUrl) {
+                alert('Please join a room first');
+                return;
+            }
+
+            try {
+                updateBotStatus('Deactivating bot...', 'warning');
+                
+                const response = await fetch(`http://localhost:7860/bot/deactivate?room_url=${encodeURIComponent(currentRoomUrl)}`);
+                const result = await response.json();
+                
+                console.log('Bot deactivation response:', result);
+                
+                if (result.status === 'bot_deactivated') {
+                    botActive = false;
+                    botPid = null;
+                    updateBotStatus('Bot Inactive', 'warning');
+                } else {
+                    updateBotStatus(`Error: ${result.message}`, 'error');
+                }
+            } catch (error) {
+                console.error('Failed to deactivate bot:', error);
+                updateBotStatus('Failed to deactivate bot', 'error');
+            }
+        }
+
+        async function refreshStatus() {
+            if (!currentRoomUrl) {
+                updateBotStatus('No room connected', 'warning');
+                return;
+            }
+
+            try {
+                // You could add a status endpoint here if needed
+                updateBotStatus('Status refreshed', 'connected');
+            } catch (error) {
+                console.error('Failed to refresh status:', error);
+            }
+        }
+
+        function updateRoomStatus(message, type) {
+            const statusEl = document.getElementById('roomStatus');
+            statusEl.textContent = message;
+            statusEl.className = `status ${type}`;
+        }
+
+        function updateBotStatus(message, type) {
+            const statusEl = document.getElementById('botStatus');
+            statusEl.textContent = message;
+            statusEl.className = `status ${type}`;
+        }
+    </script>
+</body>
+</html> 
