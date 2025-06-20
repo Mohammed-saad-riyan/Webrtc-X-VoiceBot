@@ -1,4 +1,4 @@
-# 🎤 WebRTC-X-VoiceBot
+# WebRTC-X-VoiceBot
 
 **Real-time Voice Assistant powered by WebRTC, Gemini AI, and Pipecat**
 
@@ -6,17 +6,17 @@ A sophisticated voice assistant that enables natural, real-time conversations wi
 
 ![Voice Assistant Demo](https://img.shields.io/badge/Status-Active-brightgreen) ![WebRTC](https://img.shields.io/badge/WebRTC-Enabled-blue) ![AI](https://img.shields.io/badge/AI-Gemini-orange)
 
-## 🌟 Features
+## Features
 
-- **🎯 Multiple Interface Options**: Choose from 4 different ways to interact with your AI
-- **🗣️ Real-time Voice Conversations**: Seamless voice-to-voice communication with AI
-- **🤖 Manual Bot Control**: Full control over when the AI joins your conversation
-- **⚡ Instant Voice Chat**: Quick access for immediate AI interaction
-- **🔧 Developer-Friendly**: Built for testing, demos, and development
-- **🌐 WebRTC Technology**: Low-latency, high-quality audio streaming
-- **🧠 Advanced AI**: Powered by Google's Gemini Multimodal Live API
+- ** Multiple Interface Options**: Choose from 4 different ways to interact with your AI
+- ** Real-time Voice Conversations**: Seamless voice-to-voice communication with AI
+- ** Manual Bot Control**: Full control over when the AI joins your conversation
+- ** Instant Voice Chat**: Quick access for immediate AI interaction
+- ** Developer-Friendly**: Built for testing, demos, and development
+- ** WebRTC Technology**: Low-latency, high-quality audio streaming
+- ** Advanced AI**: Powered by Google's Gemini Multimodal Live API
 
-## 🏗️ Architecture
+## Architecture
 
 ### Core Technologies
 
@@ -56,7 +56,7 @@ User Voice Input → WebRTC → Daily.co → Pipecat Pipeline → Gemini AI → 
 4. **AI Processing**: Gemini converts speech to text, generates response, converts to speech
 5. **Output**: Processed audio returns through the same pipeline to user
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### Prerequisites
 
@@ -120,15 +120,15 @@ User Voice Input → WebRTC → Daily.co → Pipecat Pipeline → Gemini AI → 
    - Visit `http://localhost:7860` to see all interface options
    - Choose your preferred interaction method
 
-## 🎮 Interface Options
+##  Interface Options
 
-### 1. 🏠 **Choice Landing Page**
+### 1.  **Choice Landing Page**
 **URL**: `http://localhost:7860`
 - Beautiful interface to choose your preferred method
 - Clear explanations of each option
 - One-click access to all interfaces
 
-### 2. 🎮 **Manual Control Interface**
+### 2.  **Manual Control Interface**
 **URL**: `http://localhost:5174`
 - **Best for**: Testing, demonstrations, controlled conversations
 - Full control over bot activation
@@ -142,7 +142,7 @@ User Voice Input → WebRTC → Daily.co → Pipecat Pipeline → Gemini AI → 
 - Instant voice conversation
 - Simple and fast
 
-### 4. 🎯 **Enhanced Direct Control**
+### 4.  **Enhanced Direct Control**
 **URL**: `http://localhost:7860/?control=true`
 - **Best for**: Direct room access with manual bot control
 - Use any Daily room URL
@@ -150,7 +150,7 @@ User Voice Input → WebRTC → Daily.co → Pipecat Pipeline → Gemini AI → 
 - Manual bot activation in direct rooms
 - Best of both worlds!
 
-## 🔧 Technical Implementation
+##  Technical Implementation
 
 ### WebRTC Integration
 
@@ -197,7 +197,7 @@ gemini_service = GeminiMultimodalLiveLLMService(
 )
 ```
 
-## 🛠️ Development
+##  Development
 
 ### Project Structure
 
@@ -240,75 +240,13 @@ gemini-webrtc-web-simple/
 - `GET /bot/activate` - Manual bot activation
 - `GET /bot/deactivate` - Manual bot deactivation
 
-## 🎯 Use Cases
 
-### 1. **Development & Testing**
-Use the Manual Control Interface for:
-- Testing voice recognition accuracy
-- Debugging conversation flows
-- Demonstrating AI capabilities
-- Controlled development environment
-
-### 2. **Quick Interactions**
-Use the Direct Auto-Bot for:
-- Immediate voice assistance
-- Quick questions and answers
-- Casual AI conversations
-- Rapid prototyping
-
-### 3. **Production Deployments**
-Use the Enhanced Direct Control for:
-- Customer-facing applications
-- Controlled user experiences
-- Integration with existing systems
-- Scalable voice applications
-
-## 🔐 Security & Privacy
+##  Security & Privacy
 
 - **API Key Management**: Environment variables for secure key storage
 - **WebRTC Security**: Encrypted peer-to-peer connections
 - **Room Isolation**: Each conversation in separate Daily.co rooms
 - **Process Management**: Isolated bot processes for each session
-
-## 🚀 Deployment
-
-### Local Development
-Follow the Quick Start guide above for local development setup.
-
-### Production Deployment
-1. Set up a server with Python 3.12+ and Node.js
-2. Configure environment variables securely
-3. Use a process manager (PM2, systemd) for the Python server
-4. Set up a reverse proxy (nginx) for production serving
-5. Configure SSL/TLS for secure connections
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- **Pipecat Team** for the excellent voice AI framework
-- **Daily.co** for robust WebRTC infrastructure
-- **Google** for the powerful Gemini AI API
-- **WebRTC Community** for real-time communication standards
-
-## 📞 Support
-
-For support, questions, or feature requests:
-- Open an issue on GitHub
-- Check the documentation
-- Review the troubleshooting guide below
-
-## 🐛 Troubleshooting
 
 ### Common Issues
 
@@ -326,9 +264,3 @@ For support, questions, or feature requests:
 - Confirm Daily.co API key is correct
 - Check room URL format
 - Ensure proper WebRTC support in browser
-
----
-
-**Built with ❤️ by Mohammed Saad Riyan**
-
-*Empowering conversations between humans and AI through cutting-edge voice technology.* 
